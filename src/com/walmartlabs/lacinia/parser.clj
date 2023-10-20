@@ -538,12 +538,9 @@
                  (reduce (fn [acc k]
                            (let [v (get result k)
                                  field-type (get object-fields k)]
-                             (when-not (contains? object-fields k)
-                               (throw-exception "Field not defined for input object."
-                                                {:field-name k
-                                                 :input-object-type nested-type
-                                                 :input-object-fields (-> object-fields keys sort vec)}))
-                             (assoc acc k (construct-literal-argument schema v field-type arg-value))))
+                             (if (contains? object-fields k)
+                               (assoc acc k (construct-literal-argument schema v field-type arg-value))
+                               acc)))
                          {}
                          (keys result))))]
 
