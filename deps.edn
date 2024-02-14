@@ -1,22 +1,23 @@
-{:deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        clj-antlr/clj-antlr {:mvn/version "0.2.12"}
-        org.flatland/ordered {:mvn/version "1.15.10"}
-        org.clojure/data.json {:mvn/version "2.4.0"}}
+{:deps {org.clojure/clojure {:mvn/version "1.12.0-alpha7"} ;; Doesn't work, yet...
+        clj-antlr/clj-antlr {:mvn/version "0.2.13"}
+        org.flatland/ordered {:mvn/version "1.15.11"}
+        org.clojure/data.json {:mvn/version "2.5.0"}
+       expound/expound {:mvn/version "0.9.0"}}
  :paths ["src" "resources"]
  :aliases
  {:dev
   {:extra-deps {criterium/criterium {:mvn/version "0.4.6"}
-                org.clojure/core.async {:mvn/version "1.6.673"}
+                org.clojure/core.async {:mvn/version "1.6.681"}
                 expound/expound {:mvn/version "0.9.0"}
-                joda-time/joda-time {:mvn/version "2.12.2"}
+                joda-time/joda-time {:mvn/version "2.12.6"}
                 com.walmartlabs/test-reporting {:mvn/version "1.2"}
                 io.aviso/logging {:mvn/version "1.0"}
                 io.github.hlship/trace {:mvn/version "v1.0"}
-                io.pedestal/pedestal.log {:mvn/version "0.5.10"}
+                io.pedestal/pedestal.log {:mvn/version "0.6.3"}
                 org.clojure/test.check {:mvn/version "1.1.1"}
                 org.clojure/data.csv {:mvn/version "1.0.1"}
-                org.clojure/tools.cli {:mvn/version "1.0.214"}
-                com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.0.3"}}
+                org.clojure/tools.cli {:mvn/version "1.0.219"}
+                com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.1.1"}}
    :jvm-opts ["-Xmx1g"
               "-Xms1g"
               "-XX:NewSize=200m"
