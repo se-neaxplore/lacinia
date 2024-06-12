@@ -18,10 +18,12 @@
   (:require [clojure.string :as string]
             [clojure.tools.build.api :as bb]
             [deps-deploy.deps-deploy :as dd]
-            [net.lewisship.build :as b]))
+            [deps-deploy.maven-settings :as ms]))
 
 (def lib 'com.neax/lacinia)
 (def version (-> "VERSION.txt" slurp string/trim))
+
+(def repo-settings "https://maven.pkg.github.com/neaxplore/xplore-backend-lambda-functions")
 
 (def jar-params {:project-name lib
                  :version version})
@@ -45,20 +47,14 @@
 
 (defn jar
   [_params]
-  (b/create-jar jar-params))
-
-(defn codox
-  [_params]
-  (b/generate-codox {:project-name lib
-                     :version version
-                     :aliases [:dev]}))
+  (bb/jar jar-params))
 
 (defn compile-ns [opts]
   (bb/compile-clj {:basis basis
-                  :src-dirs ["src"]
-                  :class-dir class-dir
-                  :compile-opts {:direct-linking true
-                                 :elide-meta [:doc :file :line :added]}}))
+                   :src-dirs ["src"]
+                   :class-dir class-dir
+                   :compile-opts {:direct-linking true
+                                  :elide-meta [:doc :file :line :added]}}))
 
 (defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
   (bb/delete {:path "target"})
@@ -74,13 +70,10 @@
 
 (defn deploy "Deploy the JAR to Github." [opts]
   (let [{:keys [jar-file] :as opts} (jar-opts opts)]
-    (dd/deploy {:installer :remote :artifact (bb/resolve-path jar-file)
-                :repository repo-settings
+    (dd/deploy {:installer :remote
+                :artifact (bb/resolve-path jar-file)
+                :repository (assoc-in (ms/deps-repo-by-id-plaintext "github")
+                                      ["github" :url]
+                                      repo-settings)
                 :pom-file (bb/pom-path (select-keys opts [:lib :class-dir]))}))
   opts)
-
-(defn publish
-  "Generate Codox documentation and publish via a GitHub push."
-  [_params]
-  (println "Generating Codox documentation")
-  (codox nil))
