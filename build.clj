@@ -16,27 +16,36 @@
 
 (ns build
   (:require [clojure.string :as string]
-            [clojure.tools.build.api :as build]
+            [clojure.tools.build.api :as bb]
+            [deps-deploy.deps-deploy :as dd]
             [net.lewisship.build :as b]))
 
-(def lib 'com.walmartlabs/lacinia)
+(def lib 'com.neax/lacinia)
 (def version (-> "VERSION.txt" slurp string/trim))
 
 (def jar-params {:project-name lib
                  :version version})
+(def basis (bb/create-basis {:project "deps.edn"}))
+
+(def class-dir "target/classes")
+
+(defn- jar-opts [opts]
+  (assoc opts
+         :lib lib :version version
+         :jar-file (format "target/%s-%s.jar" lib version)
+         :scm {:tag (str "v" version)}
+         :basis (bb/create-basis {})
+         :class-dir class-dir
+         :target "target"
+         :src-dirs ["src"]))
 
 (defn clean
   [_params]
-  (build/delete {:path "target"}))
+  (bb/delete {:path "target"}))
 
 (defn jar
   [_params]
   (b/create-jar jar-params))
-
-(defn deploy
-  [_params]
-  (clean nil)
-  (b/deploy-jar (jar nil)))
 
 (defn codox
   [_params]
@@ -44,19 +53,34 @@
                      :version version
                      :aliases [:dev]}))
 
-(def publish-dir "../apidocs/lacinia")
+(defn compile-ns [opts]
+  (bb/compile-clj {:basis basis
+                  :src-dirs ["src"]
+                  :class-dir class-dir
+                  :compile-opts {:direct-linking true
+                                 :elide-meta [:doc :file :line :added]}}))
+
+(defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
+  (bb/delete {:path "target"})
+  (let [opts (jar-opts opts)]
+    (println "\nWriting pom.xml...")
+    (bb/write-pom opts)
+    (println "\nCopying source...")
+    (bb/copy-dir {:src-dirs ["resources" "src"] :target-dir class-dir})
+    (compile-ns nil)
+    (println "\nBuilding JAR...")
+    (bb/jar opts))
+  opts)
+
+(defn deploy "Deploy the JAR to Github." [opts]
+  (let [{:keys [jar-file] :as opts} (jar-opts opts)]
+    (dd/deploy {:installer :remote :artifact (bb/resolve-path jar-file)
+                :repository repo-settings
+                :pom-file (bb/pom-path (select-keys opts [:lib :class-dir]))}))
+  opts)
 
 (defn publish
   "Generate Codox documentation and publish via a GitHub push."
   [_params]
   (println "Generating Codox documentation")
-  (codox nil)
-  (println "Copying documentation to" publish-dir "...")
-  (build/copy-dir {:target-dir publish-dir
-                   :src-dirs ["target/doc"]})
-  (println "Committing changes ...")
-  (build/process {:dir publish-dir
-                  :command-args ["git" "commit" "-a" "-m" (str "lacinia " version)]})
-  (println "Pushing changes ...")
-  (build/process {:dir publish-dir
-              :command-args ["git" "push"]}))
+  (codox nil))

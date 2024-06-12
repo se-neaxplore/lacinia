@@ -1460,6 +1460,17 @@
     (assoc element-def :deprecated (get-nested directive [:directive-args :reason] true))
     element-def))
 
+(defn ^:private apply-specified-by-directive
+  "For a field definition or enum value definition, checks for a :deprecated annotation and,
+  if present, sets the definitions :deprecated key."
+  [element-def]
+  (if-let [directive (some->> element-def
+                       :directives
+                       (filter #(-> % :directive-type (= :specifiedBy)))
+                       first)]
+    (assoc element-def :specifiedBy (get-nested directive [:directive-args :url] true))
+    element-def))
+
 (defn ^:private normalize-enum-value-def
   "The :values key of an enum definition is either a seq of enum values, or a seq of enum value defs.
   The enum values are just the keyword/symbol/string.
@@ -1771,7 +1782,8 @@
     (-> (apply-directive-arg-defaults schema object-def)
         (update-fields-in-object (fn [field-def]
                                    (cond-> (prepare-field schema object-def field-def)
-                                     object-def? apply-deprecated-directive))))))
+                                     object-def? apply-deprecated-directive
+                                     object-def? apply-specified-by-directive))))))
 
 (defn ^:private prepare-and-validate-objects
   "Comes very late in the compilation process to prepare objects, including validation that
@@ -1878,7 +1890,9 @@
                   (map-kvs compile-directive-args
                     (assoc directive-defs
                       :deprecated {:args {:reason {:type 'String}}
-                                   :locations #{:argument-definition :enum-value :field-definition :input-field-definition}})))))
+                                   :locations #{:argument-definition :enum-value :field-definition :input-field-definition}}
+                      :specifiedBy  {:args {:url {:type 'String}}
+                                     :locations #{:scalar}} )))))
 
 (defn ^:private validate-directives-by-category
   [schema category]

@@ -17,6 +17,7 @@
   (:require
     [clojure.test :refer [deftest is testing]]
     [com.walmartlabs.test-utils :refer [compile-schema execute]]
+    [com.walmartlabs.lacinia.parser.schema :refer [parse-schema]]
     [com.walmartlabs.test-schema :refer [test-schema]]
     [com.walmartlabs.lacinia.schema :as schema]
     [com.walmartlabs.lacinia.parser :as parser]
@@ -105,6 +106,7 @@
                         #"The provided schema has not been compiled"
                         (execute {} "{ whatever }"))))
 
+
 ;; These more recent tests are for testing the Antlr parser directly, w/ expectations of
 ;; a parsed query (the intermediate format).  Elsewhere, parsed query is the result of combining
 ;; the intermediate format with a compiled schema to prepare for execution. The term "executable query"
@@ -116,6 +118,20 @@
       io/resource
       (or (throw (IllegalStateException. (str "Source not found: " base-name "." extension))))
       slurp))
+
+(defmacro ^:private expect-schema
+  [base-name message]
+  `(let [input# (content ~base-name "gql")
+         expected# (edn/read-string (content ~base-name "edn"))
+         actual# (parse-schema input#)]
+     (is (= actual#
+            expected#)
+         ~message)
+     actual#))
+
+(deftest schema-parsing
+  (expect-schema "specified-by-url-directives" "built-in directive specifiedByUrl"))
+
 
 (defmacro ^:private expect
   [base-name message]

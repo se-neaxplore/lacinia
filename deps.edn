@@ -1,23 +1,23 @@
-{:deps {org.clojure/clojure {:mvn/version "1.12.0-alpha7"} ;; Doesn't work, yet...
+{:deps {org.clojure/clojure {:mvn/version "1.12.0-alpha12"}
         clj-antlr/clj-antlr {:mvn/version "0.2.13"}
-        org.flatland/ordered {:mvn/version "1.15.11"}
+        org.flatland/ordered {:mvn/version "1.15.12"}
         org.clojure/data.json {:mvn/version "2.5.0"}
-       expound/expound {:mvn/version "0.9.0"}}
+        expound/expound {:mvn/version "0.9.0"}}
  :paths ["src" "resources"]
  :aliases
  {:dev
   {:extra-deps {criterium/criterium {:mvn/version "0.4.6"}
                 org.clojure/core.async {:mvn/version "1.6.681"}
                 expound/expound {:mvn/version "0.9.0"}
-                joda-time/joda-time {:mvn/version "2.12.6"}
+                joda-time/joda-time {:mvn/version "2.12.7"}
                 com.walmartlabs/test-reporting {:mvn/version "1.2"}
                 io.aviso/logging {:mvn/version "1.0"}
-                io.github.hlship/trace {:mvn/version "v1.0"}
-                io.pedestal/pedestal.log {:mvn/version "0.6.3"}
+                io.github.hlship/trace {:mvn/version "1.3"}
+                io.pedestal/pedestal.log {:mvn/version "0.6.4"}
                 org.clojure/test.check {:mvn/version "1.1.1"}
-                org.clojure/data.csv {:mvn/version "1.0.1"}
-                org.clojure/tools.cli {:mvn/version "1.0.219"}
-                com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.1.1"}}
+                org.clojure/data.csv {:mvn/version "1.1.0"}
+                org.clojure/tools.cli {:mvn/version "1.1.230"}
+                com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.2.2"}}
    :jvm-opts ["-Xmx1g"
               "-Xms1g"
               "-XX:NewSize=200m"
@@ -48,7 +48,7 @@
 
   ;; clj -T:build <command>
   :build {:deps {io.github.hlship/build-tools
-                 {:git/tag "0.10.1" :git/sha "7ecff5"}}
+                 {:git/tag "0.10.2" :git/sha "3c446e"}}
           :ns-default build}}
 
  :net.lewisship.build/scm
