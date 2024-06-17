@@ -1,7 +1,7 @@
 {:mvn/repos {"github"
              {:url "https://maven.pkg.github.com/neaxplore/xplore-backend-lambda-functions"
               :snapshots {:enabled true}}}
- :deps {org.clojure/clojure {:mvn/version "1.12.0-alpha12"}
+ :deps {org.clojure/clojure {:mvn/version "1.12.0-beta1"}
         clj-antlr/clj-antlr {:mvn/version "0.2.13"}
         org.flatland/ordered {:mvn/version "1.15.12"}
         org.clojure/data.json {:mvn/version "2.5.0"}

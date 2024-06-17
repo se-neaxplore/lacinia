@@ -1,0 +1,1 @@
+{:scalars {:JSONObject {:directives [{:directive-type :specifiedBy, :directive-args {:url "https://datatracker.ietf.org/doc/html/rfc8259"}} {:directive-type :deprecated, :directive-args {:reason "Test"}}]}}}

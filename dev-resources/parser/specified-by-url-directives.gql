@@ -1,0 +1,1 @@
+scalar JSONObject @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc8259") @deprecated(reason: "Test")
